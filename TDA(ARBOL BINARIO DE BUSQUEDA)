@@ -1,0 +1,74 @@
+#include <stdlib.h>
+#include <stdio.h>
+//#include "ABB.h"
+
+void Ingreso(TArbol *A)
+{
+    FILE *arch;
+    TDatoA dato;
+    arch=fopen("ABB.dat","r");
+    (*A)=NULL;
+        while (!feof(arch))
+        {
+            fscanf(arch,"%d",&dato);
+            Inserta(A,dato);
+        }
+    fclose(arch);
+}
+
+void Inserta(TArbol *A,TDatoA X)
+{
+    if ((*A)==NULL)
+    {
+        (*A)=(TArbol)malloc(sizeof(Nodo));
+        (*A)->dato=X;
+        (*A)->izq=NULL;
+        (*A)->der=NULL;
+    }
+    else
+        if (X>(*A)->dato)
+            Inserta(&((*A)->der),X);
+        else
+            Inserta(&((*A)->izq),X);
+}
+
+void Borrar(TArbol *A,TArbol *aux)
+{
+    if ((*A)->der!=NULL)
+        Borrar(&((*A)->der),aux);
+    else
+    {
+        (*aux)->dato=(*A)->dato;
+        (*aux)=(*A);
+        (*A)=(*A)->izq;
+        free(*aux);
+    }
+}
+
+void Elimina(TArbol *A,TDatoA X)
+{
+    TArbol aux;
+        if ((*A)!=NULL)
+            if (X<(*A)->dato)
+                Elimina(&((*A)->izq),X);
+            else
+                if (X>(*A)->dato)
+                    Elimina(&((*A)->der),X);
+                else
+                {
+                    aux=(*A);
+                        if (aux->der==NULL)
+                        {
+                            (*A)=aux->izq;
+                            free(aux);
+                        }
+                        else
+                            if (aux->izq==NULL)
+                            {
+                                (*A)=aux->der;
+                                free(aux);
+                            }
+                            else
+                                Borrar(&(aux->izq),&aux);
+                }
+}
